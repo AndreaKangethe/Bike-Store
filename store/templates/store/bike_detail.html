@@ -1,0 +1,87 @@
+{% extends 'store/base.html' %}
+{% load humanize %}  {# Load humanize for intcomma filter #}
+{% load custom_filters %}
+
+{% block title %}{{ bike.brand }} - {{ bike.name }} {{ bike.model }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Bike Image -->
+    <div class="col-md-6">
+        <img src="{{ bike.image.url|default:'/static/default-bike.jpg' }}" class="img-fluid rounded" alt="{{ bike.name }}">
+    </div>
+
+    <!-- Bike Details -->
+    <div class="col-md-6">
+        <h1>{{ bike.brand }} - {{ bike.name }} {{ bike.model }}</h1>
+        <p>{{ bike.description }}</p>
+        <h4>Engine CC: {{ bike.engine_cc }}</h4>
+        <h4>Price: Ksh {{ bike.price|intcomma }}</h4>
+
+        {% if bike.available %}
+            <a href="{% url 'add_to_cart' bike.id %}" class="btn btn-success">Add to Cart</a>
+        {% else %}
+            <button class="btn btn-secondary" disabled>Out of Stock</button>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Overall Ratings Section -->
+<h3 class="mt-5">Customer Rating</h3>
+{% with avg_rating=reviews|average_rating %}
+    {% if avg_rating > 0 %}
+        <p>
+            {% for _ in ""|ljust:avg_rating %}⭐{% endfor %}
+            ({{ avg_rating }}/5)
+        </p>
+    {% else %}
+        <p>No ratings yet.</p>
+    {% endif %}
+{% endwith %}
+
+<!-- Individual Reviews Section -->
+<h3 class="mt-4">Customer Reviews</h3>
+{% for review in reviews %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">{{ review.user.username }}</h5>
+            <p class="card-text">
+                {% for _ in ""|ljust:review.rating %}⭐{% endfor %}
+            </p>
+            <p class="card-text">{{ review.comment }}</p>
+        </div>
+    </div>
+{% empty %}
+    <p>No reviews yet.</p>
+{% endfor %}
+
+<!-- Review Submission Form -->
+{% if user.is_authenticated %}
+<h3 class="mt-4">Leave a Review & Rating</h3>
+<form method="POST" action="{% url 'add_review' bike.id %}" class="mt-3">
+    {% csrf_token %}
+
+    <div class="mb-3">
+        <label for="rating" class="form-label">Rating</label>
+        <select name="rating" id="rating" class="form-select w-25">
+            <option value="1">1 - Poor</option>
+            <option value="2">2 - Fair</option>
+            <option value="3">3 - Good</option>
+            <option value="4">4 - Very Good</option>
+            <option value="5" selected>5 - Excellent</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="comment" class="form-label">Your Review</label>
+        <textarea name="comment" id="comment" class="form-control" rows="2" maxlength="25" required></textarea>
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit" class="btn btn-primary w-100">🚀 Submit Review & Rating</button>
+</form>
+{% else %}
+    <p><a href="{% url 'login' %}">Log in</a> to leave a review and rating.</p>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends 'store/base.html' %}
+{% load humanize %}
+{% load custom_filters %}  {# Ensure you have a custom filter for average_rating #}
+
+{% block title %}Home - Bike Store{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Search and Filter Form -->
+    <form method="GET" action="{% url 'home' %}" class="d-flex flex-wrap mb-4 gap-2">
+        <input type="text" name="q" class="form-control w-25" placeholder="Search bikes..." value="{{ query }}">
+
+        <!-- Brand Filter -->
+        <select name="brand" class="form-select w-25">
+            <option value="">All Brands</option>
+            {% for brand in brands %}
+            <option value="{{ brand }}" {% if brand == selected_brand %}selected{% endif %}>{{ brand }}</option>
+            {% endfor %}
+        </select>
+
+        <!-- Sorting -->
+        <select name="sort" class="form-select w-25">
+            <option value="">Sort By</option>
+            <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+            <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+        </select>
+
+        <button type="submit" class="btn btn-primary">Apply</button>
+    </form>
+
+    <!-- Bike Listings -->
+    <div class="row">
+        {% for bike in bikes %}
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <img src="{{ bike.image.url }}" class="card-img-top" alt="{{ bike.name }}">
+                <div class="card-body">
+                    <p class="card-text"><strong>Brand:</strong> {{ bike.brand }}</p>
+                    <h5 class="card-title"><strong>Model:</strong> {{ bike.name }} {{ bike.model }}</h5>
+                    <p class="card-text"><strong>Engine cc:</strong> {{ bike.engine_cc }}</p>
+                    <p class="card-text"><strong>Price:</strong> Ksh {{ bike.price|intcomma }}</p>
+
+                    <!-- Display Average Rating -->
+                    {% with avg_rating=bike.reviews.all|average_rating %}
+                        {% if avg_rating > 0 %}
+                            <p>
+                                {% for _ in ""|ljust:avg_rating %}⭐{% endfor %}
+                                ({{ avg_rating }}/5)
+                            </p>
+                        {% else %}
+                            <p>No ratings yet.</p>
+                        {% endif %}
+                    {% endwith %}
+
+                    <a href="{% url 'bike_detail' bike.id %}" class="btn btn-success">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center">No bikes found.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Store Policy Section -->
+    <div class="mt-5">
+        <h3>Store Policy</h3>
+        <p><strong>Returns & Refunds:</strong> Bikes can be returned within 7 days for a full refund if they are in original condition.</p>
+        <p><strong>Warranty:</strong> All bikes come with a 1-year engine warranty.</p>
+        <p><strong>Terms & Conditions:</strong> Prices are subject to change without notice. Please read our full terms before purchasing.</p>
+    </div>
+</div>
+{% endblock %}
