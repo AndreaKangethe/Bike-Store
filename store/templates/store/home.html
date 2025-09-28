@@ -1,10 +1,11 @@
 {% extends 'store/base.html' %}
 {% load humanize %}
-{% load custom_filters %}  {# Ensure you have a custom filter for average_rating #}
+{% load custom_filters %}
 
 {% block title %}Home - Bike Store{% endblock %}
 
 {% block content %}
+
 <div class="container">
     <!-- Search and Filter Form -->
     <form method="GET" action="{% url 'home' %}" class="d-flex flex-wrap mb-4 gap-2">
@@ -33,7 +34,7 @@
         {% for bike in bikes %}
         <div class="col-md-4 mb-3">
             <div class="card">
-                <img src="{{ bike.image.url }}" class="card-img-top" alt="{{ bike.name }}">
+                <a href="{% url 'bike_detail' bike.id %}"><img src="{{ bike.image.url }}" class="card-img-top" alt="{{ bike.name }}"></a>
                 <div class="card-body">
                     <p class="card-text"><strong>Brand:</strong> {{ bike.brand }}</p>
                     <h5 class="card-title"><strong>Model:</strong> {{ bike.name }} {{ bike.model }}</h5>
@@ -43,12 +44,18 @@
                     <!-- Display Average Rating -->
                     {% with avg_rating=bike.reviews.all|average_rating %}
                         {% if avg_rating > 0 %}
-                            <p>
-                                {% for _ in ""|ljust:avg_rating %}⭐{% endfor %}
+                            <p class="mb-2">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= avg_rating %}
+                                        ⭐
+                                    {% else %}
+                                        ☆
+                                    {% endif %}
+                                {% endfor %}
                                 ({{ avg_rating }}/5)
                             </p>
                         {% else %}
-                            <p>No ratings yet.</p>
+                            <p class="text-muted">No ratings yet.</p>
                         {% endif %}
                     {% endwith %}
 
@@ -65,8 +72,7 @@
     <div class="mt-5">
         <h3>Store Policy</h3>
         <p><strong>Returns & Refunds:</strong> Bikes can be returned within 7 days for a full refund if they are in original condition.</p>
-        <p><strong>Warranty:</strong> All bikes come with a 1-year engine warranty.</p>
-        <p><strong>Terms & Conditions:</strong> Prices are subject to change without notice. Please read our full terms before purchasing.</p>
+        <p><strong>Warranty:</strong> All bikes come with a 1-year manufacturer warranty.</p>
     </div>
 </div>
 {% endblock %}

@@ -1,10 +1,132 @@
+{% load custom_filters %}
+{% load humanize %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Bike Store</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2a9d8f;
+        }
+
+        .receipt-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .receipt-header h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .receipt-details {
+            margin-bottom: 30px;
+        }
+
+        .receipt-details table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .receipt-details table th, .receipt-details table td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .total-price {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2a9d8f;
+            text-align: right;
+        }
+
+        .thank-you {
+            text-align: center;
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        .btn {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #2a9d8f;
+            color: #fff;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .btn:hover {
+            background-color: #1d8f7a;
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <div class="receipt-header">
+            <h1>Bike Store</h1>
+            <h2>Receipt</h2>
+        </div>
 
+        <div class="receipt-details">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                    <tr>
+                        <td>{{ item.bike.name }} {{ item.bike.model }}</td>
+                        <td>KES {{ item.bike.price|floatformat:2|intcomma }}</td>
+                        <td>{{ item.quantity }}</td>
+
+                        <td>KES {{ item.quantity|multiply:item.bike.price|floatformat:2|intcomma }}</td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="total-price">
+    <p><strong>Total: KES {{ total_price|floatformat:2|intcomma }}</strong></p>
+</div>
+
+        </div>
+
+        <div class="thank-you">
+            <p>Thank you for shopping with us!</p>
+        </div>
+
+        <a href="{% url 'home' %}" class="btn">Continue Shopping</a>
+    </div>
 </body>
 </html>

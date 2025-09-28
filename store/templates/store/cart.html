@@ -1,6 +1,6 @@
 {% extends 'store/base.html' %}
 {% load humanize %}
-{% load custom_filters %}  {# Load the custom multiplication filter #}
+{% load custom_filters %}
 
 {% block title %}Your Cart - Bike Store{% endblock %}
 
@@ -8,43 +8,47 @@
 <div class="container">
     <h1 class="mb-4">Your Cart</h1>
 
-    <table class="table table-striped align-middle">
-        <thead>
-            <tr>
-                <th>Bike</th>
-                <th>Image</th>
-                <th>Quantity</th>
-                <th>Price</th>
-                <th>Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in cart_items %}
-            <tr>
-                <td>{{ item.bike.name }} {{item.bike.model}}</td>
-                <td>
-                    <img src="{{ item.bike.image.url }}" alt="{{ item.bike.name }}" class="img-thumbnail" style="width: 80px; height: 60px;">
-                </td>
-                <td>
-                <a href="{% url 'decrease_quantity' item.id %}" class="btn btn-sm btn-outline-secondary">-</a>
-                <strong>{{ item.quantity }}</strong>
-                <a href="{% url 'increase_quantity' item.id %}" class="btn btn-sm btn-outline-primary">+</a>
-                </td>
+    <!-- Cart Table -->
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Bike</th>
+                    <th>Image</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr>
+                    <td>{{ item.bike.name }} {{item.bike.model}}</td>
+                    <td>
+                        <img src="{{ item.bike.image.url }}" alt="{{ item.bike.name }}" class="img-thumbnail" style="width: 80px; height: 60px;">
+                    </td>
+                    <td>
+                        <a href="{% url 'decrease_quantity' item.id %}" class="btn btn-sm btn-outline-secondary" onclick="return confirm('Are you sure you want to remove this item?')">-</a>
+                        <strong>{{ item.quantity }}</strong>
+                        <a href="{% url 'increase_quantity' item.id %}" class="btn btn-sm btn-outline-primary">+</a>
+                    </td>
+                    <td>Ksh {{ item.bike.price|intcomma }}</td>
+                    <td><strong>Ksh {{ item|calculate_total|intcomma }}</strong></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center text-warning h4">Your cart is empty.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-                <td>Ksh {{ item.bike.price|intcomma }}</td>
-                <td><strong>Ksh {% widthratio item.quantity 1 item.bike.price %}</strong></td>            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="5" class="text-center">Your cart is empty.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
+    <!-- Total Price and Checkout -->
     {% if cart_items %}
     <div class="text-end">
-        <h4><strong>Total: Ksh {{ total_price|intcomma }}</strong></h4>
-        <a href="{% url 'checkout' %}" class="btn btn-success">Proceed to Checkout</a>
+        <h4 class="text-light"><strong>Total: Ksh {{ total_price|intcomma }}</strong></h4>
+        <a href="{% url 'checkout' %}" class="btn btn-lg btn-success">Proceed to Checkout</a>
     </div>
     {% endif %}
 </div>

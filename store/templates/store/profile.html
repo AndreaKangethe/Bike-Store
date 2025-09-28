@@ -8,7 +8,6 @@
     <form method="POST" enctype="multipart/form-data" class="card p-4 shadow-sm">
       {% csrf_token %}
 
-      <!-- Display form errors -->
       {% if user_form.errors or profile_form.errors %}
         <div class="alert alert-danger">
           <strong>There were some errors with your form:</strong>
@@ -41,7 +40,10 @@
 
       <div class="mb-3">
         <label for="{{ profile_form.bio.id_for_label }}" class="form-label">Bio:</label>
-        {{ profile_form.bio|attr:"class:form-control" }}
+        {# --- MODIFIED LINE --- #}
+        {# Added rows:3 to make the textarea shorter (adjust '3' as needed) #}
+        {{ profile_form.bio|attr:"class:form-control rows:3" }}
+        {# --- END MODIFIED LINE --- #}
       </div>
 
       <div class="mb-3">

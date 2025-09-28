@@ -1,4 +1,4 @@
-/*
+p/*
     DJANGO Admin styles
 */
 
@@ -10,12 +10,11 @@ html[data-theme="light"],
     --accent: #f5dd5d;
     --primary-fg: #fff;
 
-    --body-fg: #333;
+    --body-fg: #2C2C2C; /* Darker for better contrast */
     --body-bg: #fff;
-    --body-quiet-color: #666;
-    --body-loud-color: #000;
+    --body-quiet-color: #4F4F4F;    --body-loud-color: #000;
 
-    --header-color: #ffc;
+    --header-color: #F5F5F5; /* Soft White for better contrast on dark backgrounds */
     --header-branding-color: var(--accent);
     --header-bg: var(--secondary);
     --header-link-color: var(--primary-fg);

@@ -5,7 +5,29 @@
 {% block title %}{{ bike.brand }} - {{ bike.name }} {{ bike.model }}{% endblock %}
 
 {% block content %}
-<div class="row">
+<style>
+    body {
+        color: #F5F5F5; /* Soft white for contrast */
+        background-color: #121212; /* Dark background */
+    }
+    h1, h3, h4, p {
+        color: #E0E0E0; /* Light gray for better readability */
+    }
+    .content-container {
+        background: rgba(0, 0, 0, 0.6); /* Dark overlay */
+        padding: 20px;
+        border-radius: 10px;
+    }
+    .btn-primary {
+        background-color: #4A6FA5; /* Darker blue */
+        border-color: #4A6FA5;
+    }
+    .btn-primary:hover {
+        background-color: #003366; /* Deep blue hover effect */
+    }
+</style>
+
+<div class="row content-container">
     <!-- Bike Image -->
     <div class="col-md-6">
         <img src="{{ bike.image.url|default:'/static/default-bike.jpg' }}" class="img-fluid rounded" alt="{{ bike.name }}">
@@ -35,25 +57,26 @@
             ({{ avg_rating }}/5)
         </p>
     {% else %}
-        <p>No ratings yet.</p>
+        <p style="color: #F5F5F5;">No ratings yet.</p>
     {% endif %}
 {% endwith %}
 
 <!-- Individual Reviews Section -->
 <h3 class="mt-4">Customer Reviews</h3>
 {% for review in reviews %}
-    <div class="card mb-3">
+    <div class="card mb-3" style="max-width: 600px; background-color: #1e1e1e; color: #F5F5F5;">
         <div class="card-body">
             <h5 class="card-title">{{ review.user.username }}</h5>
-            <p class="card-text">
+            <p class="card-text d-inline">  
                 {% for _ in ""|ljust:review.rating %}⭐{% endfor %}
             </p>
-            <p class="card-text">{{ review.comment }}</p>
+            <p class="card-text text-truncate" style="max-width: 100%;">{{ review.comment }}</p>
         </div>
     </div>
 {% empty %}
     <p>No reviews yet.</p>
 {% endfor %}
+
 
 <!-- Review Submission Form -->
 {% if user.is_authenticated %}

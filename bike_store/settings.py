@@ -31,11 +31,8 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 
-ALLOWED_HOSTS = [
-    '127.0.0.1',
-    'localhost',
-    '72a0-102-0-14-238.ngrok-free.app'  # Add your Ngrok URL here
-]
+ALLOWED_HOSTS = ['*']
+
 
 
 # Application definition
@@ -48,7 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'store',  # Register the app
-    'django.contrib.humanize',  # Add this if it's not already there
+    'django.contrib.humanize',  
     'widget_tweaks',
 
 ]

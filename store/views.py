@@ -2,10 +2,28 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
-from django.db.models import Q  # ✅ Import for filtering
+from django.db.models import Q
 from .models import Bike, CartItem, Review
 from .forms import BikeForm, ProfileUpdateForm, UserUpdateForm
 
+
+# Checkout View
+@login_required
+def checkout(request):
+    cart_items = CartItem.objects.filter(user=request.user)
+    total_price = sum(item.quantity * item.bike.price for item in cart_items)
+
+    # If the user has submitted the checkout form, process payment or order
+    if request.method == "POST":
+        # Implement your order processing logic here
+        # For example: create an order, clear cart, etc.
+        messages.success(request, "Your order has been placed successfully!")
+        return redirect('order_confirmation')  # Redirect to an order confirmation page
+
+    return render(request, 'store/checkout.html', {'cart_items': cart_items, 'total_price': total_price})
+
+
+# Register View
 def register(request):
     if request.method == "POST":
         form = UserCreationForm(request.POST)
@@ -21,6 +39,7 @@ def register(request):
     return render(request, 'store/register.html', {'form': form})
 
 
+# Profile Update View
 @login_required
 def profile(request):
     if request.method == 'POST':
@@ -39,6 +58,7 @@ def profile(request):
     return render(request, 'store/profile.html', {'user_form': user_form, 'profile_form': profile_form})
 
 
+# Increase Cart Item Quantity
 @login_required
 def increase_quantity(request, item_id):
     cart_item = get_object_or_404(CartItem, id=item_id, user=request.user)
@@ -47,6 +67,7 @@ def increase_quantity(request, item_id):
     return redirect('view_cart')
 
 
+# Decrease Cart Item Quantity
 @login_required
 def decrease_quantity(request, item_id):
     cart_item = get_object_or_404(CartItem, id=item_id, user=request.user)
@@ -58,10 +79,7 @@ def decrease_quantity(request, item_id):
     return redirect('view_cart')
 
 
-def checkout(request):
-    return render(request, 'store/checkout.html')
-
-
+# Home View with Search and Filter Options
 def home(request):
     query = request.GET.get('q', '')
     selected_brand = request.GET.get('brand', '')
@@ -89,6 +107,7 @@ def home(request):
     })
 
 
+# Bike Detail View with Reviews
 @login_required
 def bike_detail(request, bike_id):
     bike = get_object_or_404(Bike, id=bike_id)
@@ -105,6 +124,7 @@ def bike_detail(request, bike_id):
     return render(request, 'store/bike_detail.html', {'bike': bike, 'reviews': reviews})
 
 
+# Add to Cart View
 @login_required
 def add_to_cart(request, bike_id):
     bike = get_object_or_404(Bike, id=bike_id)
@@ -117,6 +137,7 @@ def add_to_cart(request, bike_id):
     return redirect('view_cart')
 
 
+# View Cart
 @login_required
 def view_cart(request):
     cart_items = CartItem.objects.filter(user=request.user)
@@ -128,6 +149,7 @@ def view_cart(request):
     })
 
 
+# Add Review View
 @login_required
 def add_review(request, bike_id):
     if request.method == "POST":
@@ -147,6 +169,7 @@ def add_review(request, bike_id):
     return redirect('bike_detail', bike_id=bike_id)
 
 
+# Add New Bike (Admin or Authorized Users)
 @login_required
 def add_bike(request):
     if request.method == 'POST':
